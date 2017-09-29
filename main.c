@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "../../lib/btree/btree.h"
+#include "btree/btree.h"
 #include "extio.h" 				/* import readLn (func for reading input) */
 
 #include "dict.h"

@@ -5,9 +5,9 @@ CC=gcc
 # compiling flags here
 CFLAGS= -g -Wall
 
-IDIR = ../../lib/btree
+IDIR =btree/
 # define any directories containing header file other then /usr/include
-INCLUDES = -I$(IDIR)
+INCLUDES = -I $(IDIR)
 
 # define any libraries to link into executable:
 # if I want to link in libraries
@@ -18,8 +18,8 @@ LIBS = -lbt
 
 # define any directories containing implementation of the file in INCLUDES
 # ../..lib means up 2 level then search for /lib
-LDIR = ../../lib/btree
-LFLAGS = -L$(LDIR)
+LDIR = btree/
+LFLAGS = -L $(LDIR)
 
 # This uses Suffix Replacement within a macro:
 #   $(name:string1=string2)
