@@ -6,6 +6,9 @@
 #define SIZE_MEAN 15000
 #define SIZE_LINE 256
 
+
+int autoComplete(BTA *soundexTree, char *word, char *result);
+
 void createSoundexT(BTA *Dict, BTA **soundexT);
 int suggestion(BTA *soundexTree, char *word, char s[][100]);
 

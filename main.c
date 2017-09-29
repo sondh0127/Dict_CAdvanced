@@ -27,6 +27,18 @@ int menu() {
 }
 void display_Dict(BTA* rootBT);
 
+
+void autocomplete(BTA* soundexT, char* word) {
+	char result[100];
+	int k;
+	k = autoComplete(soundexT, word, result);
+	if(k!= 0) {
+		printf("%s|\n",result);
+	}
+}
+
+
+
 int main()
 {
 	char *filetxt = "anhviet109K.txt";
@@ -59,20 +71,16 @@ int main()
 	char word[SIZE_WORD];
 	char mean[SIZE_MEAN];
 	//char mean_out[SIZE_MEAN];
-	int i,k;
-	char suggest[15][100]; 		/*  */
+	/* int i,k; */
+	/* char suggest[15][100]; 		/\*  *\/ */
 	printf("Type 6 for test\n");
 	do {
 		choose = menu();
 		switch (choose) {
 		case 6:
 			/* test case : suggestion word */
-			printf("Type a word for suggestion:\n"); readLn(stdin, word, SIZE_WORD);
-			
-			k = suggestion(soundexT,word,suggest);
-			printf("k = %d\n",k );
-			if(k!=0)
-				for(i = 0; i < k; i++) printf("%s\n",suggest[i]);
+			printf("Type a word for autocomplete:\n"); readLn(stdin, word, SIZE_WORD);
+			autocomplete(soundexT, word);
 			break;
 		case 1:
 			printf("Input data:\n");
@@ -121,10 +129,11 @@ int main()
 			break;
 		case 4:
 			//btpos(rootDic, ZEND); this sh*t does not work
-			//btsel(rootDic, "wrong", mean, sizeof(char)*SIZE_MEAN, &val);
-			display_Dict(rootDic);
 			
-			//printf("Check last:\n%s\t %s\n",  word, mean);
+			//display_Dict(rootDic);
+			strcpy(word, "computer");
+			btsel(rootDic, word, mean, sizeof(char)*SIZE_MEAN, &val);
+			printf("CHECK:%s|\n%s|\n",  word, mean);
 			break;
 		case 5:
 			status = btcls(rootDic);
