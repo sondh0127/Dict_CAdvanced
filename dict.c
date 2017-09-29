@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../lib/btree/btree.h"
+#include "btree/btree.h"
 #include "soundEx.h" 			/* library suggesting word */
 #include <string.h>
 #include <ctype.h>
