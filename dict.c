@@ -129,36 +129,3 @@ int suggestion(BTA *soundexTree, char *word, char s[][100])
 	}
 	return i;
 }
-
-
-/* check s1 in s2 */
-int check(char *s1, char *s2){
-	int len1=strlen(s1);
-	int len2=strlen(s2);
-	int i;
-	if(len1>len2) return 0;
-	else {
-		for(i=0;i<len1;i++){
-			if(s1[i]!=s2[i])
-				return 0;
-		}
-	}
-	return 1;
-}
-
-
-/* find complete word, keep result in  *result */
-/* return 1 if succcesful, 0 for fail */
-int autoComplete(BTA *soundexTree, char *word, char *result){
-	int len1=strlen(word);
-	int rsize;
-	char en[40], soundex[5];
-	btsel(soundexTree,"",soundex,5*sizeof(char),&rsize);
-	while(btseln(soundexTree,en,soundex,5*sizeof(char),&rsize)==0){
-		if(check(word,en)==1){
-			strcpy(result,en);
-			return 1;
-		}
-	}
-	return 0;
-}

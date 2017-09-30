@@ -4,46 +4,20 @@
 #include <ctype.h>
 #include "btree/btree.h"
 #include "extio.h" 				/* import readLn (func for reading input) */
-
+#include "complete.h"
+ 
 #include "dict.h"
 #define MAX_LEN 15000
+int menu();
 
-int menu() {
-	int choose = 0;
-	int MAX = 5;
-	char menu[][40] = {"Add", "Search", "Delete", "Print(for test)" , "Save and exit"};
-
-	printf("\n\t=======| DICTIONARY MENU|=======\n");
-	for(int i = 0; i < MAX; i++)
-        printf("\t%d. %s\n", i+1, menu[i]);
-	printf("Enter your chose: ");
-	while(scanf("%d", &choose) != 1) {
-		printf("Input must be integer!\n");
-		while (getchar() != '\n' );
-		//wasting the buffer till the next new line
-		printf("Enter your choose: ");
-	}
-	return choose;	
-}
 void display_Dict(BTA* rootBT);
-
-
-void autocomplete(BTA* soundexT, char* word) {
-	char result[100];
-	int k;
-	k = autoComplete(soundexT, word, result);
-	if(k!= 0) {
-		printf("%s|\n",result);
-	}
-}
-
-
 
 int main()
 {
 	char *filetxt = "anhviet109K.txt";
 	char *fileDict = "dict.db";
 	char *fileSoundex = "soundex.db";
+	
 	BTA *rootDic;
 	BTA *soundexT;
 	int status, val;
@@ -67,12 +41,13 @@ int main()
 		/* copy rootDic to soundexT for sug */
 		createSoundexT(rootDic, &soundexT);
 	}
-	int choose = 0;
+	
 	char word[SIZE_WORD];
 	char mean[SIZE_MEAN];
-	//char mean_out[SIZE_MEAN];
+	char s[SIZE_WORD];
 	/* int i,k; */
 	/* char suggest[15][100]; 		/\*  *\/ */
+	int choose = 0;
 	printf("Type 6 for test\n");
 	do {
 		choose = menu();
@@ -80,7 +55,7 @@ int main()
 		case 6:
 			/* test case : suggestion word */
 			printf("Type a word for autocomplete:\n"); readLn(stdin, word, SIZE_WORD);
-			autocomplete(soundexT, word);
+			
 			break;
 		case 1:
 			printf("Input data:\n");
@@ -93,10 +68,15 @@ int main()
 			status = btins(rootDic, word, mean, sizeof(char)*SIZE_MEAN);
 			btsel(rootDic, word, mean, sizeof(char)*SIZE_MEAN, &val);
 			printf("%s|\n%s|\n",  word, mean);
+			
 			break;
 		case 2:
+			
+			/* find_word(rootDic, soundexT); */
 			printf("Input data:\n");
-			printf("- Word: ");  readLn(stdin, word, SIZE_WORD);
+			printf("- Word: "); //readLn(stdin, word, SIZE_WORD);
+			tab_complete(rootDic, s);
+			strcpy(word, s);
 			for (int i =0 ; word[i] != '\0'; i++) {
 				word[i] = tolower(word[i]);
 			}
@@ -131,7 +111,6 @@ int main()
 			//btpos(rootDic, ZEND); this sh*t does not work
 			
 			//display_Dict(rootDic);
-			strcpy(word, "computer");
 			btsel(rootDic, word, mean, sizeof(char)*SIZE_MEAN, &val);
 			printf("CHECK:%s|\n%s|\n",  word, mean);
 			break;
@@ -148,9 +127,30 @@ int main()
 	return 0;
 }
 
+int menu() {
+	/* need improve this limit MAX */
+	int choose = 0;
+	int MAX = 5;
+	char menu[][40] = {"Add", "Search", "Delete", "Print(for test)" , "Save and exit"};
+
+	printf("\n\t================================\n");
+	printf(  "\t=======| DICTIONARY MENU|=======\n");
+	printf(  "\t================================\n");
+	for(int i = 0; i < MAX; i++)
+		printf("\t%d. %s\n", i+1, menu[i]);
+	printf("Enter your chose: ");
+	while(scanf("%d", &choose) != 1) {
+		printf("Input must be integer!\n");
+		while (getchar() != '\n' );
+		//wasting the buffer till the next new line
+		printf("Enter your choose: ");
+	}
+	return choose;	
+}
+
 void display_Dict(BTA* rootDic){
 	/* must fix for dictionary output */
-	int val; //rsize
+	int val; //rse
 	long j = 0;
 	char word[SIZE_WORD];
 	char mean[SIZE_MEAN];
