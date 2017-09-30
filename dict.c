@@ -111,21 +111,3 @@ void createSoundexT(BTA *Dict, BTA **soundexT)
 	}
 	printf("Word added into soundexTree: %d\n", count);
 }
-
-
-
-int suggestion(BTA *soundexTree, char *word, char s[][100])
-{   /* must fix */
-	int rsize, i=0;
-	char en[40],soundex[5],code[5];
-	soundEx(code,word,4,1);
-	btsel(soundexTree,"",soundex,5*sizeof(char),&rsize);
-	while(btseln(soundexTree,en,soundex,5*sizeof(char),&rsize)==0 && i<49){
-		if(strcmp(code,soundex)==0) {
-			printf("%s\n",en);
-			strcpy(s[i++],en);
-		}
-		// xu li luu xau en chua tu co cung ma soundex
-	}
-	return i;
-}

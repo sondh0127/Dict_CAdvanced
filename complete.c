@@ -82,55 +82,55 @@ void tty_raw(void)
    if u input, prints * for any other input character
 */
 
-/* int screenio(BTA* btfile,char *key)//hàm xử lý kí tự nhập từ bộ đệm gồm cả dấu tab */
-/* { */
-/* 	BTint x; */
-/* 	int bytesread,i=0,j,n; */
-/*   key[i]='\0'; */
-/*   char c_in,back_space[]=BACKSP_LINE,sugg[M]; */
-/*   for(;;) */
-/*     { */
-/*       bytesread=read(STDIN_FILENO,&c_in,1); /\* Đọc 1 byte ki tự *\/ */
-/*       if(bytesread<0) fatal("read error"); */
-/*       if(bytesread==0) c_in=0;   /\* Ko đọc đc byte nào thì bỏ qua *\/ */
-/*       switch(c_in)         /\* Khi đọc đc 1 byte *\/ */
-/* 	{ */
-/* 	case '\r' : printf("\n\r");  /\* Khi gặp dấu ENTER hoặc ESC thì kết thúc *\/ */
-/* 	case 27 : return 0; */
-/* 	case 127:					/\*Xử lý khi bấm phím BACKSPACE *\/ */
-/* 	  i=strlen(key); */
-/* 	  if(i>0) */
-/* 	    { */
-/* 	      key[--i]='\0'; */
-/* 	      bfndky(btfile,key,&x); */
-/* 	      write(STDOUT_FILENO,back_space,3); */
-/* 	    } */
-/* 	  break; */
-/* 	case '\t':	      /\* Gợi ý và in ra từ  khi bấm phím TAB *\/ */
-/* 	  j=strlen(key); */
-/* 	  while(j-->0) write(STDOUT_FILENO,back_space,3); */
-/* 	  n=bnxtky(btfile,sugg,&x); */
-/* 	  if(n==0&&strhead(key,sugg,i)!=0) */
-/* 	    strcpy(key,sugg); */
-/* 	  else */
-/* 	    { */
-/* 	      key[i]='\0'; */
-/* 	      bfndky(btfile,key,&x); */
-/* 	    } */
-/* 	  write(STDOUT_FILENO,key,strlen(key)); */
-/* 	  break; */
-/* 	default: */
-/* 	  if(' '<=c_in&&c_in<='~') */
-/* 	    {		/\* In ra các kí tự nhận vào như bt *\/ */
-/* 	      i=strlen(key); */
-/* 	      key[i++]=tolower(c_in); */
-/* 	      key[i]='\0'; */
-/* 	      bfndky(btfile,key,&x); */
-/* 	      write(STDOUT_FILENO, &c_in, 1); */
-/* 	    } */
-/* 	} */
-/*     } */
-/* } */
+int screenio(BTA* btfile,char *key)//hàm xử lý kí tự nhập từ bộ đệm gồm cả dấu tab
+{
+	BTint x;
+	int bytesread,i=0,j,n;
+  key[i]='\0';
+  char c_in,back_space[]=BACKSP_LINE,sugg[M];
+  for(;;)
+    {
+      bytesread=read(STDIN_FILENO,&c_in,1); /* Đọc 1 byte ki tự */
+      if(bytesread<0) fatal("read error");
+      if(bytesread==0) c_in=0;   /* Ko đọc đc byte nào thì bỏ qua */
+      switch(c_in)         /* Khi đọc đc 1 byte */
+	{
+	case '\r' : printf("\n\r");  /* Khi gặp dấu ENTER hoặc ESC thì kết thúc */
+	case 27 : return 0;
+	case 127:					/*Xử lý khi bấm phím BACKSPACE */
+	  i=strlen(key);
+	  if(i>0)
+	    {
+	      key[--i]='\0';
+	      bfndky(btfile,key,&x);
+	      write(STDOUT_FILENO,back_space,3);
+	    }
+	  break;
+	case '\t':	      /* Gợi ý và in ra từ  khi bấm phím TAB */
+	  j=strlen(key);
+	  while(j-->0) write(STDOUT_FILENO,back_space,3);
+	  n=bnxtky(btfile,sugg,&x);
+	  if(n==0&&strhead(key,sugg,i)!=0)
+	    strcpy(key,sugg);
+	  else
+	    {
+	      key[i]='\0';
+	      bfndky(btfile,key,&x);
+	    }
+	  write(STDOUT_FILENO,key,strlen(key));
+	  break;
+	default:
+	  if(' '<=c_in&&c_in<='~')
+	    {		/* In ra các kí tự nhận vào như bt */
+	      i=strlen(key);
+	      key[i++]=tolower(c_in);
+	      key[i]='\0';
+	      bfndky(btfile,key,&x);
+	      write(STDOUT_FILENO, &c_in, 1);
+	    }
+	}
+    }
+}
 
 
 
