@@ -5,23 +5,14 @@
 #include "btree/btree.h"
 #include "extio.h" 				/* import readLn (func for reading input) */
 #include "complete.h"
- 
 #include "dict.h"
 #define MAX_LEN 15000
-int menu();
-
-/* int add_word(BTA *rootBT, BTA *soundexT, char *word, char *mean); */
-/* add word = add_dict + add_soundex (miss add soundex)*/
 
 /* MAIN'S PROTOTYPE*/
-int add_dict(BTA *rootBT, char *word, char *mean);
-void search_mean(BTA *rootBT, char *word);
-void print_mean(BTA *rootBT, char *word);
-void del_word(BTA *rootBT, char *word);
+int menu();
+
 void display_Dict(BTA* rootBT);
 /* about struct mean (for update later) == danh sach max 10 word + so luong hien co */
-
-
 
 /* MAIN */
 int main()
@@ -37,16 +28,16 @@ int main()
 	/* open file if file doesn't exist => create new file*/
 	rootDic = btopn(fileDict, 0, FALSE);
 	if(rootDic != NULL) {
-		printf("Open file successful!\n");
+		printf("Open file %s successful!\n", fileDict);
 	} else {
-		printf("Creating data\n");
+		printf("(Please wait) Creating data for Dictionary\n");
 		rootDic = btcrt(fileDict, 0, FALSE);
 		/* import, creating data from .txt; */
 		createDict(filetxt, &rootDic);
 	}
 	soundexT = btopn(fileSoundex, 0, FALSE);
 	if(soundexT != NULL) {
-		printf("Open file successful!\n");
+		printf("Open file %s successful!\n", fileSoundex);
 	} else {
 		printf("(Creating data for soundex!)\n");
 		soundexT = btcrt(fileSoundex, 0, FALSE);
@@ -56,54 +47,50 @@ int main()
 	
 	char word[SIZE_WORD];
 	char mean[SIZE_MEAN];
-	char s[SIZE_WORD];
-	/* int i,k; */
-	/* char suggest[15][100]; 		/\*  *\/ */
+	char s[SIZE_LINE];
+
+	char pri[]="Word: ";
+
+	/* VARIABLE FOR RUNNING */
+	
 	int choose = 0;
-	printf("Type 6 for test\n");
 	do {
 		choose = menu();
 		switch (choose) {
-		case 6:
-			/* test case : suggestion word */
-			printf("Type a word for autocomplete:\n"); readLn(stdin, word, SIZE_WORD);
+		case 1:
+			/* find_word(rootDic, soundexT); */
+			printf("Input data:(Use tab for compelete word)\n");
+			/* printf("- Word: "); readLn(stdin, word, SIZE_WORD); */
+			
+			write(STDOUT_FILENO,pri,strlen(pri));
+			tab_complete(rootDic, s);
+			strcpy(word, s);
+			find_word(rootDic, soundexT, word);
 			
 			break;
-		case 1:
+		case 2:
 			printf("Input data: \n");
 			printf("- Word: ");  readLn(stdin, word, SIZE_WORD);
 			printf("- Mean: ");  readLn(stdin, mean, SIZE_MEAN);
 			/*  */
-			status = add_dict(rootDic, word, mean);
-			if(status != 0) printf("This word already exists\n");
+			status = add_word(rootDic, soundexT, word, mean);
+			if(status == 0) printf("This word already exists\n");
 			else {
 				printf("Adding successful\n");
 				/* test */
 				print_mean(rootDic, word);
 			}
 			break;
-		case 2:
-			/* find_word(rootDic, soundexT); */
-			printf("Input data:\n");
-			printf("- Word: "); //readLn(stdin, word, SIZE_WORD);
-			tab_complete(rootDic, s);
-			strcpy(word, s);
-			search_mean(rootDic, word);
-			
-			break;
-
 		case 3:
-			printf("Input data:\n");
-			printf("- Word: "); //readLn(stdin, word, SIZE_WORD);
+			printf("Input data:(Use tab for compelete word)\n");
+			/* printf("- Word: "); readLn(stdin, word, SIZE_WORD); */
+			write(STDOUT_FILENO,pri,strlen(pri));
 			tab_complete(rootDic, s);
 			strcpy(word, s);
-			del_word(rootDic, word);
-			
+			del_word(rootDic, soundexT, word);
 			break;
 		case 4:
-			//btpos(rootDic, ZEND); this sh*t does not work
 			
-			//display_Dict(rootDic);
 			btsel(rootDic, word, mean, sizeof(char)*SIZE_MEAN, &val);
 			printf("CHECK:%s|\n%s|\n",  word, mean);
 			break;
@@ -112,6 +99,7 @@ int main()
 			if(status == 0) printf("Close rootDic successfully!\n");
 			status = btcls(soundexT);
 			if(status == 0) printf("Close soundexT successfully!\n");
+			printf("GOODBYE!\n");
 			break;
 		default:
 			printf("Invalid input! Type (1-5)\n");
@@ -127,7 +115,7 @@ int menu() {
 	/* need improve this limit MAX */
 	int choose = 0;
 	int MAX = 5;
-	char menu[][40] = {"Add", "Search", "Delete", "Print(for test)" , "Save and exit"};
+	char menu[][40] = {"Search", "Add", "Delete", "Print lastest word" , "Save and exit"};
 
 	printf("\n\t================================\n");
 	printf(  "\t=======| DICTIONARY MENU|=======\n");
@@ -144,44 +132,6 @@ int menu() {
 	return choose;	
 }
 
-void print_mean(BTA *rootBT, char *word)
-{
-	int status, rsize; 
-	char mean[SIZE_MEAN];
-	if(rootBT!=NULL) {
-		btsel(rootBT, word, mean, sizeof(char)*SIZE_MEAN, &rsize);
-		printf("%s|\n%s|\n",  word, mean);
-	}
-}
-
-int add_dict(BTA *rootBT, char *word, char *mean) {
-	for (int i =0 ; word[i] != '\0'; i++) {
-		word[i] = tolower(word[i]);
-	}
-	int status, rsize; // return size	
-	status = btins(rootBT, word, mean, sizeof(char)*SIZE_MEAN);
-	if(status == 0) return 0;
-	else
-		return -1;
-}
-
-void search_mean(BTA *rootBT, char *word)
-{
-	int status, rsize; 
-	status = bfndky(rootBT, word, &rsize);
-	
-	if (status != 0) printf("Can't Found!\n");
-	else print_mean(rootBT, word);
-}
-
-void del_word(BTA *rootBT, char *word)
-{
-	int status, rsize;
-	status = btdel(rootBT, word);
-	if (status != 0) printf("Can't Found!\n");
-	else print_mean(rootBT, word);
-
-}
 
 void display_Dict(BTA* rootDic){
 	/* must fix for dictionary output */

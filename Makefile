@@ -34,8 +34,7 @@ OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 .PHONY: clean
 #action
-all: 	$(TARGET) 
-
+# all: $(TARGET) 
 # This uses Suffix Replacement within a macro:
 #   $@ = left-part of ":" ( == $(TARGET))
 # 
